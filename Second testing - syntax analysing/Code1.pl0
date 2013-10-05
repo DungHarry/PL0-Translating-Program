@@ -1,0 +1,59 @@
+/*
+	Author: Dung Harry
+	Date created: 5th, October 2013
+	Operating System: Ubuntu 13.04 Desktop x86_64
+	Compiler: GNU compiler 4.7.3
+
+	Description: this is the first PL0 source code for syntax analysing
+*/
+
+program test2;
+const x3 = 99;
+var i, j, xp[2], y, z, t, tp[100];
+
+procedure a1;
+const LENGTH = 77;
+var i, j, a, b;
+
+procedure subPrOc2(var ku; var a23z);
+var t;
+begin
+	t := a23z;
+	ku := a23z;
+	a23z := t
+end;
+
+procedure subproC1;
+var i, j;
+begin
+	for i:= 1 to 99 do
+		for j:= i + 1 to 100 do
+			if tp[i] > tp [j] then
+				call SubProc2(tp[i], tp[j])
+end;
+
+begin
+	call subPrOc1
+end;
+
+procedure a2(x; var y; z);
+var i, t, a, b;
+begin
+	for i:= 1 to 5 * 9 + 100 do
+	begin
+		b := z * i + x;
+		if b >= 6 then
+			a := a - b
+		else
+			a := a + b
+	end;
+	t := t + 1;
+	tp[t] := a
+end;
+
+begin
+	for i:= 1 to 10 do
+		for j:= i + 2 to x3 do
+			call a2(i, j, z);
+	call a1
+end.
