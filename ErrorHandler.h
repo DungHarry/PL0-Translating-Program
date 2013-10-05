@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include "LexicalAns.h"
+#include "SemanticAns.h"
 
 //Define all variable in this header here
 
@@ -29,16 +30,22 @@ int semantic_error;
 typedef enum lexical_error lexical_error;
 typedef enum syntax_error syntax_error; 
 typedef enum semantic_errors semantic_errrors;
+//Part handling for interal errors or errors are occurred in processing, not related to all processing progress
+
+enum internal_error {
+	LEXICAL_NULL_PARAMETER_CONSTRUCT,			//The null node was passed into construct function for lexical
+	LEXICAL_COULDNT_OPEN_FILE_SOURCE_CODE,			//Couldn't open source code file for lexical analysis
+	LEXICAL_NULL_TOKEN_TABLE_INITIALIZE,			//The null node was passed into initialize function for lexical
+	LEXICAL_TOO_MUCH_TOKEN,					//Have too much token in PL0 source code
+	LEXICAL_INVALID_INPUT_ANALYSIS,				//Invalid input for lexical analysing
+	SEMANTIC_TOO_MUCH_ERRORS				//Too much errors in semantic analysing
+};
+
 /*--------------------------------------------------------------Part handling errors for lexical analysis--------------------------------------*/
 
 enum lexical_error {
 	LEXICAL_SUCCESS,					//Not having error
 	LEXICAL_MAX_SIZE_NOT_ENOUGH,				//The max size of token table is not enought for all lexical in the PL0 source code
-	LEXICAL_NULL_TOKEN_TABLE_INITIALIZE,			//The null node was passed into initialize function for lexical
-	LEXICAL_NULL_PARAMETER_CONSTRUCT,			//The null node was passed into construct function for lexical
-	LEXICAL_COULDNT_OPEN_FILE_SOURCE_CODE,			//Couldn't open source code file for lexical analysis
-	LEXICAL_INVALID_INPUT_ANALYSIS,
-	LEXICAL_TOO_MUCH_TOKEN,					//Have too much token in PL0 source code
 	LEXICAL_INVALID_IDENTIFIER,				//Invalid begin of identifier
 	LEXICAL_INVALID_TOO_LONG_IDENTIFIER,			//Invalid identifier too long length
 	LEXICAL_INVALID_MATH_OPER,				//Invalid math operator
@@ -128,7 +135,7 @@ enum semantic_errors {
 	SEMANTIC_SUCCESS					//Semantic successfully
 };
 
-void vPrintSemanticErrors();
+void vPrintSemanticErrors(smt_error *smtErrorTable);
 
 int print_error();
 

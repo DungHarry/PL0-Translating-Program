@@ -14,8 +14,6 @@
 status_lexical_error = SUCCESS_ANALYSIS;
 int iLineSyntaxError = 1;
 int iColumnSyntaxError = 1;
-int iLineSemanticError = 1;
-int iColumnSemanticError = 1;
 
 void vPrintLexicalErrors(token_str *tokenTable, int iNumElements) {
 	int i;
@@ -252,8 +250,8 @@ void vPrintSyntaxErrors() {
 	exit(1);
 }
 
-void vPrintSemanticErrors() {
-
+void vPrintSemanticErrors(smt_error *smtErrorTable) {
+	
 }
 
 int print_error() {
@@ -273,6 +271,9 @@ int print_error() {
 			break;
 
 		case LEXICAL_INVALID_INPUT_ANALYSIS: printf("Invalid input for lexical analysis process: the null, empty PL0 source code name or null token table\n");
+			break;
+
+		case SEMANTIC_TOO_MUCH_ERRORS: printf("Too much(more than %d) errors in semantic analysing\n", MAX_SMT_ERRORS);
 			break;
 
 		default: printf("Unknown error\n");
