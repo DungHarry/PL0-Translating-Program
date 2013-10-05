@@ -1,0 +1,40 @@
+//I am Dung Harry
+/*
+	Code test for Code.pl0
+*/
+
+program lexicalTesting;
+const abc = 9, z = 4, re_al1 = 245e+5, real2 = 435.57354;
+var x, y[10];
+
+procedure proc(var i; j);
+const a = 1;
+var c, d, e;
+
+procedure name;
+begin
+if y[1] = y[10] then
+begin
+call proc(y[2], a);
+_c := c + 2;
+c := c % 10 + 1;
+y[c] := y[2];
+end
+else
+d := 1
+end;
+
+begin
+call name;
+d := 7;
+while d > 0 do
+begin
+d := d - 1;
+e := d * 2 + e * d;
+end;
+end;
+
+begin
+call proc(1, 2);
+call name
+end.
