@@ -30,15 +30,31 @@ int semantic_error;
 typedef enum lexical_error lexical_error;
 typedef enum syntax_error syntax_error; 
 typedef enum semantic_errors semantic_errrors;
+typedef enum internal_error internal_error;
 //Part handling for interal errors or errors are occurred in processing, not related to all processing progress
 
 enum internal_error {
-	LEXICAL_NULL_PARAMETER_CONSTRUCT,			//The null node was passed into construct function for lexical
+	LEXICAL_NULL_PARAMETER_CONSTRUCT = 70,			//The null node was passed into construct function for lexical
 	LEXICAL_COULDNT_OPEN_FILE_SOURCE_CODE,			//Couldn't open source code file for lexical analysis
 	LEXICAL_NULL_TOKEN_TABLE_INITIALIZE,			//The null node was passed into initialize function for lexical
 	LEXICAL_TOO_MUCH_TOKEN,					//Have too much token in PL0 source code
 	LEXICAL_INVALID_INPUT_ANALYSIS,				//Invalid input for lexical analysing
-	SEMANTIC_TOO_MUCH_ERRORS				//Too much errors in semantic analysing
+	SEMANTIC_TOO_MUCH_ERRORS,				//Too much errors in semantic analysing
+	SEMANTIC_NON_NULL_POINTER_CREATE_NEW_NODE,		//None null pointer was passed to the create new node function in semantic analysing
+	SEMANTIC_COULDNT_CREATE_NEW_NODE_SMT_PROCEDURE,		//Couldn't create new node for smt_procedure data structure in semantic analysing
+	SEMANTIC_COULDNT_CREATE_NEW_NODE_PROCEDURE_PARAS,	//Couldn't create new node for procedure_paras in semantic analysing
+	SEMANTIC_NULL_NODE_INSERT_PROCEDURE_PARAS,		//Null node was passed to iInsertProcedurePara function for semantic analysing
+	SEMANTIC_NULL_NODE_PRINT_PROCEDURE_PARAS,		//Null procedure_paras node was passed to the iPrintProcedurePara function for semantic analysing
+	SEMANTIC_NULL_NODE_FILE_PRINT_PROCEDURE_PARAS,		//Null procedure_paras node was passed to the iFilePrintProcedurePara function for semantic analysing
+	SEMANTIC_NULL_FILE_POINTER_FILE_PRINT_PROCEDURE_PARAS,	//Null file pointer was passed to the iFilePrintProcedurePara function for semantic analysing
+	SEMANTIC_NULL_NODE_INSERT_SMT_PROCEDURE,		//Null node was passed to iInsertSmtProcedure function for semantic analysing
+	SEMANTIC_NOT_FOUND_SEARCH_SMT_PROCEDURE,		//The node wanted to search not found in the iSearchSmtProcedure for semantic analysing
+	SEMANTIC_NULL_NODE_PRINT_SMT_PROCEDURE,			//The null node was passed to the iPrintSmtProcedure for semantic analysing
+	SEMANTIC_NULL_NODE_FILE_PRINT_SMT_PROCEDURE,		//The null node was passed to the iFilePrintSmtProcedure for semantic analysing
+	SEMANTIC_INVALID_FILE_NAME_FILE_PRINT_SMT_PROCEDURE,	//Null or empty file name was passed to the iFilePrintSmtProcedure for semantic analysing
+	SEMANTIC_NULL_NODE_GET_SUM_SMT_PROCEDURE,		//Null smt_procedure node was passed to the iGetSumSmtProcedure function for semantic analysing
+	SEMANTIC_NULL_NODE_GET_SUM_PROCEDURE_PARAS,		//Null procedure_paras node was passed to the iGetSumProcedurePara function for semantic analysing
+	SEMANTIC_COULDNT_CREATE_NEW_FILE_PRINT_SMT_PROCEDURE	//Couldn't create new file in iFilePrintSmtProcedure function for semantic analysing
 };
 
 /*--------------------------------------------------------------Part handling errors for lexical analysis--------------------------------------*/

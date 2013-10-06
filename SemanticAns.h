@@ -19,14 +19,17 @@
 //Extern some variable here
 
 extern token_str tokenTable[MAX_TOKEN];
-extern iLineSemanticError = 1;
-extern iColumnSemanticError = 1;
+extern int current_error;
 //Define some needed value
 
 #define END_SEMANTIC -1
 #define MAX_TOKEN_EXPAND 2000
 #define MAX_SMT_ELEMENTS 3000
 #define MAX_SMT_ERRORS 2000
+
+#define void* LPVOID
+#define TYPE_SMT_PROCEDURE 0
+#define TYPE_PROCEDURE_PARAS 1
 
 #define SMT_SEARCH_NAME_FOUND 1
 #define SMT_SEARCH_NAME_NOT_FOUND 0
@@ -42,6 +45,7 @@ typedef enum status_smt_data status_smt_data;
 typedef enum value_smt_type value_smt_type;
 typedef struct procedure_paras procedure_paras;
 typedef struct smt_procedure smt_procedure;
+typedef unsigned int u_int;
 
 smt_data smtTable[MAX_SMT_ELEMENTS];
 smt_error smtError[MAX_SMT_ERRORS];
@@ -96,17 +100,17 @@ struct token_expand {				//The struct holds all information of lexical token, if
 	int _t_value;				//Type of value: it can be integer, real, character or string
 };
 
-struct procedure_paras {
-	int _order;
-	int _type;
-	procedure_paras *_next;
+struct procedure_paras {			//The struct holds the information of parameters, contains: order and type of each parameter
+	int _order;				//Order of parameter from left to right side
+	int _type;				//Type of parameter, can be: passed by value or passed by reference
+	procedure_paras *_ptr;			//The procedure_paras pointer
 };
 
-struct smt_procedure {
-	char *_name;
-	procedure_paras *_head_paras;
-	procedure_paras *_tail_paras;
-	smt_procedure *_next;
+struct smt_procedure {				//The struct holds information of all procedure in PL0 source code
+	char *_name;				//Name of procedure
+	procedure_paras *_head_paras;		//The pointer to the head of parameters list
+	procedure_paras *_tail_paras;		//The pointer to the tail of parameters list
+	smt_procedure *_ptr;			//The smt_procedure pointer 
 };
 /*------------------------------------------Declare all function in the semantic analysing---------------------------------------------------------*/
 
@@ -120,12 +124,16 @@ int iUpdateValueType(token_expand *tokenExpandTable, char *idenValue, int iNewVa
 int iInserSmtError(smt_error *smtErrorTable, smt_error *errorElement);
 //Declare some functions for procedure parameters
 
-int iInsertProcedurePara(procedure_paras **head, procedure_paras **tail, int order, int type);
+int iCreateNewNode(LPVOID* node, int typeNode);
+
+int iInsertProcedurePara(procedure_paras **head, procedure_paras **tail, procedure_paras **node, int order, int type);
+int iGetSumProcedurePara(procedure_paras **head, procedure_paras **tail);
 int iPrintProcedurePara(procedure_paras **head, procedure_paras **tail);
 int iFilePrintProcedurePara(FILE *file, procedure_paras **head, procedure_paras **tail);
 //Declare some functions for semantic procedure
 
-int iInsertSmtProcedure(smt_procedure **head, smt_procedure **tail, char *name);
+int iInsertSmtProcedure(smt_procedure **head, smt_procedure **tail, smt_procedure **node, char *name);
+int iGetSumSmtProcedure(smt_procedure **head, smt_procedure **tail);
 int iSearchSmtProcedure(smt_procedure **head, smt_procedure **tail, smt_procedure **result, char *name);
 int iPrintSmtProcedure(smt_procedure **head, smt_procedure **tail);
 int iFilePrintSmtProcedure(char *fileName, smt_procedure **head, smt_procedure **tail);

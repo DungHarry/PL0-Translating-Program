@@ -276,6 +276,48 @@ int print_error() {
 		case SEMANTIC_TOO_MUCH_ERRORS: printf("Too much(more than %d) errors in semantic analysing\n", MAX_SMT_ERRORS);
 			break;
 
+		case SEMANTIC_NON_NULL_POINTER_CREATE_NEW_NODE: printf("None null pointer was passed to the create new node function in semantic analysing\n");
+			break;
+
+		case SEMANTIC_COULDNT_CREATE_NEW_NODE_SMT_PROCEDURE: printf("Couldn't create new node for smt_procedure data type in semantic analysing\n");
+			break;
+
+		case SEMANTIC_COULDNT_CREATE_NEW_NODE_PROCEDURE_PARAS: printf("Couldn't create new node for procedure_paras data type in semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_INSERT_PROCEDURE_PARAS: printf("The null node was passed to the iInsertProcedurePara function in semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_PRINT_PROCEDURE_PARAS: printf("The null node was passed to the iPrintProcedurePara function in semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_FILE_PRINT_PROCEDURE_PARAS: printf("The null node was passed to the iFilePrintProcedurePara function in semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_FILE_POINTER_FILE_PRINT_PROCEDURE_PARAS: printf("The null file pointer was passed to the iFilePrintProcedurePara function in semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_INSERT_SMT_PROCEDURE: printf("The null node was passed to the iInsertSmtProcedure function in semantic analysing\n");
+			break;
+
+		case SEMANTIC_NOT_FOUND_SEARCH_SMT_PROCEDURE: printf("The node wanted to search not found in iSearchSmtProcedure for sematic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_PRINT_SMT_PROCEDURE: printf("The null smt_procedure node was passed to the iPrintSmtProcedure function for semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_FILE_PRINT_SMT_PROCEDURE: printf("The null smt_procedure node was passed to the iFilePrintSmtProcedure function for semantic analysing\n");
+			break;
+
+		case SEMANTIC_INVALID_FILE_NAME_FILE_PRINT_SMT_PROCEDURE: printf("The null or empty file name was passed to the iFilePrintSmtProcedure function for semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_GET_SUM_SMT_PROCEDURE: printf("The null smt_procedure node was passed to the iGetSumSmtProcedure function for semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_GET_SUM_PROCEDURE_PARAS: printf("The null procedure_paras node was passed to the iGetSumProcedurePara function for semantic analysing\n");
+			break;
+
 		default: printf("Unknown error\n");
 			break;
 	}
