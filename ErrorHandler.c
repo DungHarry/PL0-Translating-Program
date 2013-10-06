@@ -251,7 +251,46 @@ void vPrintSyntaxErrors() {
 }
 
 void vPrintSemanticErrors(smt_error *smtErrorTable) {
-	
+	int i;
+
+	printf("\tHave some semantic errors occurred: \n\n");
+
+	for(i = 0; i < MAX_SMT_ERRORS; i ++) {
+		printf("**%d. Semantic error %d::%d at ", i + 1, (smtErrorTable + i)->_line, (smtErrorTable + i)->_column);
+
+		switch((smtErrorTable + i)->_type) {
+			case smtVariable: printf("variable ");
+				break;
+
+			case smtArray: printf("array ");
+				break;
+
+			case smtParameterValue: printf("parameter passed by value ");
+				break;
+
+			case smtParameterReference: printf("parameter passed by reference ");
+				break;
+
+			case smtConst: printf("constant ");
+				break;
+
+			case smtProcedure: printf("procedure ");
+				break;
+
+			default: printf("unknown ");
+				break;
+		}
+
+		printf("'%s': ", (smtErrorTable + i)->_name);
+
+		switch((smtErrorTable + i)->_error) {
+			case SEMANTIC_SUCCESS: printf("Semantic successfully\n");
+				break;
+
+			default: printf("Unknown error\n");
+				break;
+		}
+	}
 }
 
 int print_error() {
@@ -316,6 +355,15 @@ int print_error() {
 			break;
 
 		case SEMANTIC_NULL_NODE_GET_SUM_PROCEDURE_PARAS: printf("The null procedure_paras node was passed to the iGetSumProcedurePara function for semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_SEARCH_PROCEDURE_PARAS: printf("The null procedure_paras node was passed to the iSearchProcedurePara function for semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODES_PASSED_ANALYSIS: printf("Some null nodes were passed to the iAnalysisSemantic function for semantic analysing\n");
+			break;
+
+		case SEMANTIC_NOT_FOUND_KEYWORD_PROGRAM_AT_FIRST: printf("The keyword program not found at the first of PL0 source code\n");
 			break;
 
 		default: printf("Unknown error\n");

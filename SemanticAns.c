@@ -14,17 +14,15 @@
 
 extern token_str tokenTable[MAX_TOKEN];
 extern int current_error;
+extern int semantic_error;
 //Initialize all vallue of variables are declared in the SemanticAns.h header
 
-topStack = 0;
-statusProgram = statusProcedure = statusBegin = 0;
+topStack = -1;
+statusProgram = statusProcedure = statusBegin = statusCommon = 0;
 head_procedure = tail_procedure = NULL;
 /*---------------------------------------------------------Report details for all functions are declared in the SemanticAns.h-----------------------*/
 
-void vInitialize() {
-	table_smt_data smtTable[MAX_SMT_ELEMENTS];
-	smt_error smtError[MAX_SMT_ERRORS];
-	token_expand tokenSemantic[MAX_SEMANTIC_ELEMENTS];
+void vInitialize(smt_data *smtTable, smt_error *smtError, token_expand *tokenExpand) {
 	int i;
 
 	for(i = 0; i < MAX_SMT_ELEMENTS; i ++) {
@@ -36,24 +34,92 @@ void vInitialize() {
 	}
 
 	for(i = 0; i < MAX_TOKEN_EXPAND; i ++) {
-		(tokenSemantic + i)->_index = END_SEMANTIC;
+		(tokenExpand + i)->_index = END_SEMANTIC;
 	}
 }
 
-int iAnalysisSemantic(token_str *tokenTable) {
-	
+int iAnalysisSemantic(token_str *tokenTable, table_smt_data *smtTable, smt_error *smtError, token_expand *tokenExpand) {
+	token_str entity;
+	int iCount = 0;
+	char *nameProgram;
+
+	if((tokenTable != NULL) && (smtTable != NULL) && (smtError != NULL) && (tokenExpand != NULL)) {
+		vInitialize(smtTable, smtError, tokenExpand);
+
+		entity = *(tokenTable + iCount);
+
+		if(entity._index == kProgram) {
+			iSetSemanticStatus(1, 0, 0, cmmProgram);
+		} else {
+			current_error = SEMANTIC_NOT_FOUND_KEYWORD_PROGRAM_AT_FIRST;
+
+			print_error();
+		}
+
+		index ++;
+		entity = *(tokenTable + iCount);
+
+		while((iCount < MAX_TOKEN) && (entity._index != -1)) {
+			if(READ_PROGRAM_NAME(statusProgram, statusProcedure, statusBegin, statusCommon)) {
+				nameProgram = entity._name;
+
+				iCount ++;
+
+				while(!NEXT_IDEN_PROGRAM(index)((tokenTable + iCount)->_index)) {
+					iCount ++;
+				}
+
+				if((tokenTable + iCount)->_index == kVar) {
+					iSetSemanticStatus(statusProgram, statusProcedure, statusBegin, cmmVar);
+				} else if((tokenTable + iCount)->_index == kConst) {
+					iSetSemanticStatus(statusProgram, statusProcedure, statusBegin, cmmConst);
+				} else if((tokenTable + iCount)->_index == kProcedure) {
+					iSetSemanticStatus(statusProgram, statusProcedure + 1, statusBegin, cmmNameProcedure);
+				} else if((tokenTable + iCount)->_index == kBegin) {
+					
+				}
+			} else if()
+		}
+	} else {
+		current_error = SEMANTIC_NULL_NODES_PASSED_ANALYSIS;
+
+		print_error();
+	}
+
+	return current_error;
 }
 
-int vPushSmtTable(smt_data *smtTable, token_expand *tokenExpandTable, smt_data smtElement) {
-	
+int vPushSmtTable(smt_data *smtTable, smt_data smtElement) {
+	(smtTable + topStack + 1)->_line = smtElement._line;
+	(smtTable + topStack + 1)->_column = smtElement._column;
+	(smtTable + topStack + 1)->_name = smtElement._name
+	(smtTable + topStack + 1)->_type_value = smtElement._type_value;
+	(smtTable + topStack + 1)->_type = smtElement._type;
+	(smtTable + topStack + 1)->_status = VALUE_INTIALIZE_STATUS;
+
+	topStack ++;
+
+	return topStack;
 }
 
 int vPopSmtTable(smt_data *smtTable) {
-	
+	for(; (topStack >= 0) && (smtTable != VALUE_DICCUSSED_STATUS); topStack --) {
+		(smtTable + i)->_status = END_SEMANTIC;
+	}
+
+	return topStack;
 }
 
-int iSearchSmtTable(char *idenName) {
-	iSearch
+int iSearchSmtTable(smt_data *smtTable, char *idenName) {
+	int i ;
+
+	for(i = 0; (i < MAX_SMT_ELEMENTS) && ((smtTable + i)->_status != END_SEMANTIC); i ++) {
+		if(strcmp(idenName, (smtTable + i)->_name) == 0) {
+			return SMT_SEARCH_NAME_FOUND;
+		}
+	}
+
+	return SMT_SEARCH_NAME_NOT_FOUND;
 }
 
 int iSearchValueType(token_expand *tokenExpandTable, char *idenValue) {
@@ -104,6 +170,51 @@ int iInserSmtError(smt_error *smtErrorTable, smt_error *errorElement) {
 	}
 
 	return current_error;
+}
+
+int iIncreaseStatusAUnit(smt_data *smtTable) {
+	int i;
+
+	if(smtTable != NULL) {
+		for(i = 0; (i < MAX_SMT_ELEMENTS) && ((smtTable + i)->_status != END_SEMANTIC); i ++) {
+			(smtTable + i)->_status ++;
+		}
+
+		current_error = SEMANTIC_SUCCESS;
+	} else {
+		current_error = SEMANTIC_NULL_NODE_INCREASE_STATUS;
+
+		print_error();
+	}
+
+	return current_error;
+}
+
+int iDecreaseStatusAUnit(smt_data *smtTable) {
+	int i;
+
+	if(smtTable != NULL) {
+		for(i = 0; (i < MAX_SMT_ELEMENTS) && ((smtTable + i)->_status != END_SEMANTIC); i ++) {
+			(smtTable + i)->_status --;
+		}
+
+		current_error = SEMANTIC_SUCCESS;
+	} else {
+		current_error = SEMANTIC_NULL_NODE_DECREASE_STATUS;
+
+		print_error();
+	}
+
+	return current_error;
+}
+
+int iSetSemanticStatus(int newStProgram, int newStProcedure, int newStBegin, int newStCommon) {
+	statusProgram = newStProgram;
+	statusProcedure = newStProcedure;
+	statusBegin = newStBegin;
+	statusCommon = iNewStCommon;
+
+	return current_error = SEMANTIC_SUCCESS;
 }
 //Report details all functions for procedure parameters
 
@@ -177,6 +288,30 @@ int iInsertProcedurePara(procedure_paras **head, procedure_paras **tail, procedu
 
 		print_error();
 	}
+
+	return current_error;
+}
+
+int iSearchProcedurePara(procedure_paras **head, procedure_paras **tail, procedure_paras **result, char *name) {
+	procedure_paras *crt, *prv, *tmp;
+
+	if(*head != NULL) {
+		for(crt = *head, prv = NULL; crt != NULL; tmp = crt, crt = (procedure_paras *) ((u_int) (crt->_ptr) ^ (u_int) (prv)), prv = tmp) {
+			if(strcmp(name, crt->_name) == 0) {
+				*result = crt;
+
+				current_error = SEMANTIC_SUCCESS;
+
+				return current_error;
+			}
+		}
+	} else {
+		current_error = SEMANTIC_NULL_NODE_SEARCH_PROCEDURE_PARAS;
+
+		print_error();
+	}
+
+	*result = NULL;
 
 	return current_error;
 }

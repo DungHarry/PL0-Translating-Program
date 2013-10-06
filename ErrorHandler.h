@@ -54,7 +54,12 @@ enum internal_error {
 	SEMANTIC_INVALID_FILE_NAME_FILE_PRINT_SMT_PROCEDURE,	//Null or empty file name was passed to the iFilePrintSmtProcedure for semantic analysing
 	SEMANTIC_NULL_NODE_GET_SUM_SMT_PROCEDURE,		//Null smt_procedure node was passed to the iGetSumSmtProcedure function for semantic analysing
 	SEMANTIC_NULL_NODE_GET_SUM_PROCEDURE_PARAS,		//Null procedure_paras node was passed to the iGetSumProcedurePara function for semantic analysing
-	SEMANTIC_COULDNT_CREATE_NEW_FILE_PRINT_SMT_PROCEDURE	//Couldn't create new file in iFilePrintSmtProcedure function for semantic analysing
+	SEMANTIC_COULDNT_CREATE_NEW_FILE_PRINT_SMT_PROCEDURE,	//Couldn't create new file in iFilePrintSmtProcedure function for semantic analysing
+	SEMANTIC_NULL_NODE_SEARCH_PROCEDURE_PARAS,		//Null procedure_paras node in iSearchProcedurePara function for semantic analysing
+	SEMANTIC_NULL_NODES_PASSED_ANALYSIS,			//Some null nodes were passed to the iAnalysisSemantic function for semantic analysing
+	SEMANTIC_NULL_NODE_INCREASE_STATUS,			//Null node was passed to the iIncreaseStatusAUnit function for semantic analysising
+	SEMANTIC_NULL_NODE_DECREASE_STATUS,			//Null node was passed to the iDecreaseStatusAUnit function for semantic analysising
+	SEMANTIC_NOT_FOUND_KEYWORD_PROGRAM_AT_FIRST		//The keyword program not found at the first
 };
 
 /*--------------------------------------------------------------Part handling errors for lexical analysis--------------------------------------*/

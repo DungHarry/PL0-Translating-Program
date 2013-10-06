@@ -20,6 +20,7 @@
 
 extern token_str tokenTable[MAX_TOKEN];
 extern int current_error;
+extern int semantic_error;
 //Define some needed value
 
 #define END_SEMANTIC -1
@@ -36,24 +37,45 @@ extern int current_error;
 
 #define VALUE_TYPE_SEARCH_NOT_FOUND -1
 #define UPDATE_VALUE_TYPE_FAILURE -1
+
+#define VALUE_DICCUSSED_STATUS 0
+#define VALUE_INTIALIZE_STATUS 1
 //Define some data type here
 
 typedef struct smt_error smt_error;
 typedef struct table_smt_data table_smt_data;
 typedef struct token_expand token_expand;
-typedef enum status_smt_data status_smt_data;
+typedef enum status_semantic status_semantic;
 typedef enum value_smt_type value_smt_type;
 typedef struct procedure_paras procedure_paras;
 typedef struct smt_procedure smt_procedure;
+typedef enum status_common status_common;
 typedef unsigned int u_int;
 
 smt_data smtTable[MAX_SMT_ELEMENTS];
 smt_error smtError[MAX_SMT_ERRORS];
-token_expand tokenSemantic[MAX_TOKEN_EXPAND];
+token_expand tokenExpand[MAX_SEMANTIC_ELEMENTS];
 smt_procedure *head_procedure, *tail_procedure;
 
 int topStack;
-int statusProgram, statusProcedure, statusBegin;
+int statusProgram, statusProcedure, statusBegin, statusCommon;
+//Define some statuses and switch statuses here
+
+			//For statuses
+#define BEGIN_END_PROGRAM(stProgram, stProcedure, stBegin) ((stProgram == 0) && (stProcedure == 0) && (stBegin == 0))
+#define READ_PROGRAM_NAME(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure == 0) && (stBegin == 0) && (stCommon == cmmProgram))
+#define READ_VAR(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >= 0) && (stBegin == 0) && (stCommon == cmmVar))
+#define READ_CONST(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >=0) && (stBegin == 0) && (stCommon == cmmConst))
+#define READ_NAME_PROCEDURE(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >= 1) && (stBegin == 0) && (stCommon == cmmNameProcedure))
+#define READ_DECLARARE(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedire >= 0) && (stBegin == 0) && ((stCommon == cmmConst) || (stCommon = cmmVar)))
+#define READ_STATEMENT(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >= 1) && (stBegin >= 1) && (stCommon == stStatement))
+#define READ_STATEMENT_IF(value) (value == cmmIf)
+#define READ_ASSIGN(value) (value == cmmAssign)
+#define READ_STATEMENT_WHILE(value) (value == cmmWhile)
+#define READ_STATEMENT_CALL(value) (value == cmmCall)
+#define READ_STATEMENT_FOR(value) (value == cmmFor)
+
+#define NEXT_IDEN_PROGRAM(index) ((index == kVar) || (index == kConst) || (index == kProcedure) || (index == kBegin))
 //Report for some structs hold information about variable, parameter and procedure here
 
 struct smt_error {				//This is struct hold the information of an error occurred in semantic analysing
@@ -73,10 +95,19 @@ struct smt_data {				//Struct holds the information of all variables, parameters
 	int _status;				//Status of data, this data is kept until the value of this member different with 0
 };
 
-enum status_smt_data {				//Enum for status of semantic data
-	smtotConsidering,			//Not considering
-	considering,				//Considering
-	considered				//Considered
+enum status_semantic {				//Status for common status
+	cmmConst,				//Common constant
+	cmmVar,					//Common variable
+	cmmParameter,				//Common parameter
+	cmmIf,					//Common if
+	cmmAssign,				//Common assign
+	cmmWhile,				//Common while
+	cmmCall,				//Common call
+	cmmFor,					//Common for
+	cmmProgram,				//Common program
+	cmmProcedure,				//Common procedure
+	cmmNameProcedure,			//Common name procedure
+	stStatement				//Status statement
 };
 
 enum type_smt_data {				//Enum for type of semantic data
@@ -84,7 +115,7 @@ enum type_smt_data {				//Enum for type of semantic data
 	smtArray,				//Array type
 	smtParameterValue,			//Parameter as value type
 	smtParameterReference,			//Parameter as reference type
-	smtConstant,				//Constant type
+	smtConst,				//Constant type
 	smtProcedure				//Procedure type
 };
 
@@ -102,6 +133,7 @@ struct token_expand {				//The struct holds all information of lexical token, if
 
 struct procedure_paras {			//The struct holds the information of parameters, contains: order and type of each parameter
 	int _order;				//Order of parameter from left to right side
+	char *_name;				//Parameter name
 	int _type;				//Type of parameter, can be: passed by value or passed by reference
 	procedure_paras *_ptr;			//The procedure_paras pointer
 };
@@ -114,19 +146,23 @@ struct smt_procedure {				//The struct holds information of all procedure in PL0
 };
 /*------------------------------------------Declare all function in the semantic analysing---------------------------------------------------------*/
 
-void vInitialize();
-int iAnalysisSemantic(token_str *tokenTable);
+void vInitialize(smt_data *smtTable, smt_error *smtError, token_expand *tokenExpand);
+int iAnalysisSemantic(token_str *tokenTable, table_smt_data *smtTable, smt_error *smtError, token_expand *tokenExpand);
 int vPushSmtTable(smt_data *smtTable, token_expand *tokenExpandTable, smt_data smtElement);
 int vPopSmtTable(smt_data *smtTable);
-int iSearchSmtTable(char *idenName);
+int iSearchSmtTable(smt_data *smtTable, char *idenName);
 int iSearchValueType(token_expand *tokenExpandTable, char *idenValue);
 int iUpdateValueType(token_expand *tokenExpandTable, char *idenValue, int iNewValue);
 int iInserSmtError(smt_error *smtErrorTable, smt_error *errorElement);
+int iIncreaseStatusAUnit(smt_data *smtTable);
+int iDecreaseStatusAUnit(smt_data *smtTable);
+int iSetSemanticStatus(int newStProgram, int newStProcedure, int newStBegin, int newStCommon);
 //Declare some functions for procedure parameters
 
 int iCreateNewNode(LPVOID* node, int typeNode);
 
 int iInsertProcedurePara(procedure_paras **head, procedure_paras **tail, procedure_paras **node, int order, int type);
+int iSearchProcedurePara(procedure_paras **head, procedure_paras **tail, procedure_paras **result, char *name);
 int iGetSumProcedurePara(procedure_paras **head, procedure_paras **tail);
 int iPrintProcedurePara(procedure_paras **head, procedure_paras **tail);
 int iFilePrintProcedurePara(FILE *file, procedure_paras **head, procedure_paras **tail);
