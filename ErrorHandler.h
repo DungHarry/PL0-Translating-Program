@@ -59,7 +59,15 @@ enum internal_error {
 	SEMANTIC_NULL_NODES_PASSED_ANALYSIS,			//Some null nodes were passed to the iAnalysisSemantic function for semantic analysing
 	SEMANTIC_NULL_NODE_INCREASE_STATUS,			//Null node was passed to the iIncreaseStatusAUnit function for semantic analysising
 	SEMANTIC_NULL_NODE_DECREASE_STATUS,			//Null node was passed to the iDecreaseStatusAUnit function for semantic analysising
-	SEMANTIC_NOT_FOUND_KEYWORD_PROGRAM_AT_FIRST		//The keyword program not found at the first
+	SEMANTIC_NOT_FOUND_KEYWORD_PROGRAM_AT_FIRST,		//The keyword program not found at the first
+	SEMANTIC_INVALID_AFTER_VAR_DECLARATION,			//Invalid keyword after var declaration
+	SEMANTIC_INVALID_AFTER_PROGRAM_DECLARATION,		//Invalid keyword after var declaration
+	SEMANTIC_INVALID_DATA_TYPE_CONST_DECLARATION,		//Invalid data type in const declaration
+	SEMANTIC_INVALID_AFTER_CONST_DECLARATION,		//Invalid keyword after constant declaration
+	SEMANTIC_NULL_NODE_DELETE_SUB_SMT_PROCEDURE,		//The null smt_procedure node was passed to the iDeleteSubSmtProcedure function for semantic analysing
+	SEMANTIC_NULL_NODE_INCREASE_SMT_PROCEDURE,		//The null node was passed to the iIncreaseStatusSmtProcedure function for semantic analysing
+	SEMANTIC_NULL_NODE_DECREASE_SMT_PROCEDURE,		//The null node was passed to the iDecreaseStatusSmtProcedure function for semantic analysing
+	SEMANTIC_INVALID_AFTER_PROCEDURE_DECLARATION		//The invalid after procedure declaration
 };
 
 /*--------------------------------------------------------------Part handling errors for lexical analysis--------------------------------------*/
@@ -153,7 +161,23 @@ void vPrintSyntaxErrors();
 /*-------------------------------------------------Part handing errors for semantic analysing---------------------------------------------*/
 
 enum semantic_errors {
-	SEMANTIC_SUCCESS					//Semantic successfully
+	SEMANTIC_SUCCESS,					//Semantic successfully
+	SEMANTIC_FAILURE,					//Semantic failure at global
+	SEMANTIC_E_CHANGE_VALUE_CONST,				//Try to change value of constant
+	SEMANTIC_E_IDEN_NOT_DECLARATION,			//The identifier wasn't declared
+	SEMANTIC_E_IDEN_LOST_INDEX_ELEMENT_ARRAY,		//Lost index of array's element
+	SEMANTIC_E_DUPLICATE_IDEN_IDEN_DECLARE,			//Duplicate identifier with identifier, const or parameter
+	SEMANTIC_E_DUPLICATE_IDEN_PROCEDURE_DECLARATION,	//Duplicate identifier with procedure declaration
+	SEMANTIC_E_DUPLICATE_CONST_IDEN_DECLARATION,		//Duplicate const with identifier, const or parameter
+	SEMANTIC_E_DUPLICATE_CONST_PROCEDURE_DECLARATION,	//Duplicate identifier with procedure declaration
+	SEMANTIC_E_DUPLICATE_PROCEDURE_IDEN_DECLARATION,	//Duplicate procedure with identifier declaration
+	SEMANTIC_E_DUPLICATE_PROCEDURE_PROCEDURE_DECLARATION,	//Duplicate procedure with procedure declaration
+	SEMANTIC_E_DIVIDE_CREATE_REAL_VALUE_INDEX_ARRAY,	//Devide create real index of array's element
+	SEMANTIC_E_REAL_VALUE_IN_INDEX_ARRAY,			//The real value existed in index of array's element
+	SEMANTIC_E_NOT_DECLARATION_V_INDEX_ARRAY,		//The variable wasn't declared in index array
+	SEMANTIC_E_REAL_V_INDEX_ARRAY,				//The real variable, const or parameter in the index of array's element
+	SEMANTIC_E_CHARACTER_V_INDEX_ARRAY,			//The variable, const or parameter has type of character in the index of array's element
+	SEMANTIC_E_STRING_V_INDEX_ARRAY				//The variable, const or parameter has type of string in the index of array's element
 };
 
 void vPrintSemanticErrors(smt_error *smtErrorTable);

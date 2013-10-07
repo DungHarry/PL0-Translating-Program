@@ -198,7 +198,7 @@ void vPrintSyntaxErrors() {
 		case SYNTAX_LOST_IDENTIFIER_PARAMETER_PROCEDURE: printf("Lost identifier as parameter in procedure declaration\n");
 			break;
 
-		case SYNTAX_INVALID_NEXT_PARAMETER_PROCEDURE: printf("Lost character , or ) in procedure declaration\n");
+		case SYNTAX_INVALID_NEXT_PARAMETER_PROCEDURE: printf("Lost character ; or ) in procedure declaration\n");
 			break;
 
 		case SYNTAX_LOST_SEMICOLON_PROCEDURE: printf("Lost ; in procedure declaration\n");
@@ -287,6 +287,51 @@ void vPrintSemanticErrors(smt_error *smtErrorTable) {
 			case SEMANTIC_SUCCESS: printf("Semantic successfully\n");
 				break;
 
+			case SEMANTIC_E_CHANGE_VALUE_CONST: printf("Try to change value of constant\n");
+				break;
+
+			case SEMANTIC_E_IDEN_NOT_DECLARATION: printf("The identifier wasn't declared\n");
+				break;
+
+			case SEMANTIC_E_IDEN_LOST_INDEX_ELEMENT_ARRAY: printf("Lost index of array identifier\n");
+				break;
+
+			case SEMANTIC_E_DUPLICATE_IDEN_IDEN_DECLARE: printf("Duplicate identifier with identifier, const or parameter declaration\n");
+				break;
+
+			case SEMANTIC_E_DUPLICATE_IDEN_PROCEDURE_DECLARATION: printf("Duplicate identifier with procedure declaration\n");
+				break;
+
+			case SEMANTIC_E_DUPLICATE_CONST_IDEN_DECLARATION: printf("Duplicate const with identifier, const or parameter declaration\n");
+				break;
+
+			case SEMANTIC_E_DUPLICATE_CONST_PROCEDURE_DECLARATION: printf("Duplicate const with procedure declaration\n");
+				break;
+
+			case SEMANTIC_E_DUPLICATE_PROCEDURE_IDEN_DECLARATION: printf("Duplicate procedure with identifier, const or parameter declaration\n");
+				break;
+
+			case SEMANTIC_E_DUPLICATE_PROCEDURE_PROCEDURE_DECLARATION: printf("Duplicate procedure with procedure declaration\n");
+				break;
+
+			case SEMANTIC_E_DIVIDE_CREATE_REAL_VALUE_INDEX_ARRAY: printf("Have / operator, it is caused of creating real index of element's array\n");
+				break;
+
+			case SEMANTIC_E_REAL_VALUE_IN_INDEX_ARRAY: printf("Have real value existed in the index of array's element\n");
+				break;
+
+			case SEMANTIC_E_NOT_DECLARATION_V_INDEX_ARRAY: printf("The variable, parameter or const wasn't declared in index array part\n");
+				break;
+
+			case SEMANTIC_E_REAL_V_INDEX_ARRAY: printf("The real variable, paramter or const in the index of array's element\n");
+				break;
+
+			case SEMANTIC_E_CHARACTER_V_INDEX_ARRAY: printf("The variable, paramter or const has type of character in the index of array's element\n");
+				break;
+
+			case SEMANTIC_E_STRING_V_INDEX_ARRAY: printf("The variable, paramter or const has type of string in the index of array's element\n");
+				break;
+
 			default: printf("Unknown error\n");
 				break;
 		}
@@ -363,7 +408,31 @@ int print_error() {
 		case SEMANTIC_NULL_NODES_PASSED_ANALYSIS: printf("Some null nodes were passed to the iAnalysisSemantic function for semantic analysing\n");
 			break;
 
-		case SEMANTIC_NOT_FOUND_KEYWORD_PROGRAM_AT_FIRST: printf("The keyword program not found at the first of PL0 source code\n");
+		case SEMANTIC_NOT_FOUND_KEYWORD_PROGRAM_AT_FIRST: printf("The keyword program not found at the first of PL0 source code for semantic analysing\n");
+			break;
+
+		case SEMANTIC_INVALID_AFTER_VAR_DECLARATION: printf("Invalid keyword after var declaration for semantic analysing, it must be: var, const, procedure or begin\n");
+			break;
+
+		case SEMANTIC_INVALID_AFTER_PROGRAM_DECLARATION: printf("Invalid keyword after program declaration for semantic analysing, it must be: var, const, procedure or begin\n");
+			break;
+
+		case SEMANTIC_INVALID_DATA_TYPE_CONST_DECLARATION: printf("Invalid data type of value in constant declaration. It must be integer, real, char or string\n");
+			break;
+
+		case SEMANTIC_INVALID_AFTER_CONST_DECLARATION: printf("Invalid keyword after const keyword for semantic analysing, it must be: var, const, procedure or begin\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_DELETE_SUB_SMT_PROCEDURE: printf("The null smt_procedure was passed to the iDeleteSubSmtProcedure function for semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_INCREASE_SMT_PROCEDURE: printf("The null node was passed to the iIncreaseStatusSmtProcedure function for semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_DECREASE_SMT_PROCEDURE: printf("The null node was passed to the iDecreaseStatusSmtProcedure function for semantic analysing");
+			break;
+
+		case SEMANTIC_INVALID_AFTER_PROCEDURE_DECLARATION: printf("Invalid keyword after the procedure declaration for semantic analysing\n");
 			break;
 
 		default: printf("Unknown error\n");

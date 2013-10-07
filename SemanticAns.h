@@ -40,6 +40,7 @@ extern int semantic_error;
 
 #define VALUE_DICCUSSED_STATUS 0
 #define VALUE_INTIALIZE_STATUS 1
+#define OUT_STATUS_SMT_PROCEDURE -1
 //Define some data type here
 
 typedef struct smt_error smt_error;
@@ -59,6 +60,7 @@ smt_procedure *head_procedure, *tail_procedure;
 
 int topStack;
 int statusProgram, statusProcedure, statusBegin, statusCommon;
+int semanticStatus;
 //Define some statuses and switch statuses here
 
 			//For statuses
@@ -67,15 +69,20 @@ int statusProgram, statusProcedure, statusBegin, statusCommon;
 #define READ_VAR(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >= 0) && (stBegin == 0) && (stCommon == cmmVar))
 #define READ_CONST(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >=0) && (stBegin == 0) && (stCommon == cmmConst))
 #define READ_NAME_PROCEDURE(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >= 1) && (stBegin == 0) && (stCommon == cmmNameProcedure))
-#define READ_DECLARARE(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedire >= 0) && (stBegin == 0) && ((stCommon == cmmConst) || (stCommon = cmmVar)))
 #define READ_STATEMENT(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >= 1) && (stBegin >= 1) && (stCommon == stStatement))
 #define READ_STATEMENT_IF(value) (value == cmmIf)
 #define READ_ASSIGN(value) (value == cmmAssign)
 #define READ_STATEMENT_WHILE(value) (value == cmmWhile)
 #define READ_STATEMENT_CALL(value) (value == cmmCall)
 #define READ_STATEMENT_FOR(value) (value == cmmFor)
+#define END_PROCEDURE(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && () )
 
 #define NEXT_IDEN_PROGRAM(index) ((index == kVar) || (index == kConst) || (index == kProcedure) || (index == kBegin))
+#define AFTER_VAR(index) ((index == kVar) || (index == kConst) || (index == kProcedure) || (index == kBegin))
+#define AFTER_CONST(index) ((index == kVar) || (index == kConst) || (index == kProcedure) || (index == kBegin))
+#define NEXT_VALUE_CONST(index) ((index == vInteger) || (index == vReal) || (index == vChar) || (index == vString))
+#define AFTER_NAME_PROCEDURE(index) ((index == kVar) || (index == kConst) || (index == kProcedure) || (index == kBegin))
+#define END_STATEMENT(index) ((index == kSemicolon) || (index == kEnd))
 //Report for some structs hold information about variable, parameter and procedure here
 
 struct smt_error {				//This is struct hold the information of an error occurred in semantic analysing
@@ -89,6 +96,7 @@ struct smt_error {				//This is struct hold the information of an error occurred
 struct smt_data {				//Struct holds the information of all variables, parameters, constants are declared in source code
 	int _line;				//The line the data was declared
 	int _column;				//The column the data was declared
+	int _index;				//Index in token lexical
 	char *_name;				//Name of data
 	int _type_value;			//Type of value: integer, real, char, string
 	int _type;				//Type of data, it can be: variable, constant, parameter as value, paramerter as reference
@@ -104,10 +112,16 @@ enum status_semantic {				//Status for common status
 	cmmWhile,				//Common while
 	cmmCall,				//Common call
 	cmmFor,					//Common for
+	cmmEnd,
 	cmmProgram,				//Common program
 	cmmProcedure,				//Common procedure
 	cmmNameProcedure,			//Common name procedure
 	stStatement				//Status statement
+};
+
+enum sub_status {				//Sub status when analysis var, const, statement
+	varArray,				//Var array
+	varNormal				//Var normal
 };
 
 enum type_smt_data {				//Enum for type of semantic data
@@ -135,11 +149,13 @@ struct procedure_paras {			//The struct holds the information of parameters, con
 	int _order;				//Order of parameter from left to right side
 	char *_name;				//Parameter name
 	int _type;				//Type of parameter, can be: passed by value or passed by reference
+	int _type_value;
 	procedure_paras *_ptr;			//The procedure_paras pointer
 };
 
 struct smt_procedure {				//The struct holds information of all procedure in PL0 source code
 	char *_name;				//Name of procedure
+	int _status;
 	procedure_paras *_head_paras;		//The pointer to the head of parameters list
 	procedure_paras *_tail_paras;		//The pointer to the tail of parameters list
 	smt_procedure *_ptr;			//The smt_procedure pointer 
@@ -147,31 +163,37 @@ struct smt_procedure {				//The struct holds information of all procedure in PL0
 /*------------------------------------------Declare all function in the semantic analysing---------------------------------------------------------*/
 
 void vInitialize(smt_data *smtTable, smt_error *smtError, token_expand *tokenExpand);
-int iAnalysisSemantic(token_str *tokenTable, table_smt_data *smtTable, smt_error *smtError, token_expand *tokenExpand);
+int iAnalysisSemantic(token_str *tokenTable, smt_data *smtTable, smt_error *smtError, token_expand *tokenExpand);
 int vPushSmtTable(smt_data *smtTable, token_expand *tokenExpandTable, smt_data smtElement);
 int vPopSmtTable(smt_data *smtTable);
-int iSearchSmtTable(smt_data *smtTable, char *idenName);
+int iSearchSmtTable(smt_data *smtTable, smt_data **result, char *idenName);
 int iSearchValueType(token_expand *tokenExpandTable, char *idenValue);
 int iUpdateValueType(token_expand *tokenExpandTable, char *idenValue, int iNewValue);
 int iInserSmtError(smt_error *smtErrorTable, smt_error *errorElement);
 int iIncreaseStatusAUnit(smt_data *smtTable);
 int iDecreaseStatusAUnit(smt_data *smtTable);
 int iSetSemanticStatus(int newStProgram, int newStProcedure, int newStBegin, int newStCommon);
+int iAddSemanticError(int line, int column, int type, char *name, int error, int index);
 //Declare some functions for procedure parameters
 
 int iCreateNewNode(LPVOID* node, int typeNode);
 
-int iInsertProcedurePara(procedure_paras **head, procedure_paras **tail, procedure_paras **node, int order, int type);
+int iInsertProcedurePara(procedure_paras **head, procedure_paras **tail, procedure_paras **node, char *name, int order, int _type_value, int type);
 int iSearchProcedurePara(procedure_paras **head, procedure_paras **tail, procedure_paras **result, char *name);
+int iDeleteProcedurePara(procedure_paras **head, procedure_paras **tail);
 int iGetSumProcedurePara(procedure_paras **head, procedure_paras **tail);
 int iPrintProcedurePara(procedure_paras **head, procedure_paras **tail);
 int iFilePrintProcedurePara(FILE *file, procedure_paras **head, procedure_paras **tail);
 //Declare some functions for semantic procedure
 
 int iInsertSmtProcedure(smt_procedure **head, smt_procedure **tail, smt_procedure **node, char *name);
+int iDeleteSmtProcedureStatus(smt_procedure **head, smt_procedure **tail, int status);
+int iDeleteSubSmtProcedure(smt_procedure **head, smt_procedure **tail);						//Sub procedures have _status = -1
 int iGetSumSmtProcedure(smt_procedure **head, smt_procedure **tail);
 int iSearchSmtProcedure(smt_procedure **head, smt_procedure **tail, smt_procedure **result, char *name);
 int iPrintSmtProcedure(smt_procedure **head, smt_procedure **tail);
 int iFilePrintSmtProcedure(char *fileName, smt_procedure **head, smt_procedure **tail);
+int iIncreaseStatusSmtProcedure(smt_procedure **head, smt_procedure **tail);				//Increase all _status of member 1 unit
+int iDecreaseStatusSmtProcedure(smt_procedure **head, smt_procedure **tail);				//Decrease all _status of member 1 unit
 
 #endif
