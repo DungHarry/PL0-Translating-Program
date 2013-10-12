@@ -14,7 +14,6 @@
 
 #include <stdio.h>
 #include "LexicalAns.h"
-#include "SemanticAns.h"
 
 //Define all variable in this header here
 
@@ -31,6 +30,28 @@ typedef enum lexical_error lexical_error;
 typedef enum syntax_error syntax_error; 
 typedef enum semantic_errors semantic_errrors;
 typedef enum internal_error internal_error;
+typedef struct smt_error smt_error;
+typedef enum type_smt_data type_smt_data;
+//Report sime extended struct here
+
+#define MAX_SMT_ERRORS 2000
+
+struct smt_error {				//This is struct hold the information of an error occurred in semantic analysing
+	int _line;				//Line error occurred
+	int _column;				//Column error occurred
+	int _type;				//Type of data error occurred
+	char *_name;				//Name of data error occurred
+	int _error;				//Error identifier
+};
+
+enum type_smt_data {				//Enum for type of semantic data
+	smtVariable,				//Variabe type
+	smtArray,				//Array type
+	smtParameterValue,			//Parameter as value type
+	smtParameterReference,			//Parameter as reference type
+	smtConst,				//Constant type
+	smtProcedure				//Procedure type
+};
 //Part handling for interal errors or errors are occurred in processing, not related to all processing progress
 
 enum internal_error {
@@ -67,7 +88,12 @@ enum internal_error {
 	SEMANTIC_NULL_NODE_DELETE_SUB_SMT_PROCEDURE,		//The null smt_procedure node was passed to the iDeleteSubSmtProcedure function for semantic analysing
 	SEMANTIC_NULL_NODE_INCREASE_SMT_PROCEDURE,		//The null node was passed to the iIncreaseStatusSmtProcedure function for semantic analysing
 	SEMANTIC_NULL_NODE_DECREASE_SMT_PROCEDURE,		//The null node was passed to the iDecreaseStatusSmtProcedure function for semantic analysing
-	SEMANTIC_INVALID_AFTER_PROCEDURE_DECLARATION		//The invalid after procedure declaration
+	SEMANTIC_INVALID_AFTER_PROCEDURE_DECLARATION,		//The invalid after procedure declaration
+	SEMANTIC_NULL_SMT_PROCEDURE_UPDATE_TYPE,		//The null node in the iUpdateValueType function for semantic analysing
+	SEMANTIC_NULL_NODE_PRINT_SMT_TABLE,			//The null smt_data node was passed to the iPrintSmtTable function for semantic analysing
+	SEMANTIC_NULL_NODE_FILE_PRINT_SMT_TABLE,		//The null smt_data node was passed to the iFilePrintSmtTable function for semantic analysing
+	SEMANTIC_INVALID_FILE_NAME_FILE_PRINT_SMT_TABLE,	//Invalid fileName parameter was passed to the iFilePrintSmtTable function for semantic analysing
+	SEMANTIC_COULDNT_CREATE_NEW_FILE_PRINT_SMT_TABLE	//Couldn't create new file in the iFilePrintSmtTable function for semantic analysing
 };
 
 /*--------------------------------------------------------------Part handling errors for lexical analysis--------------------------------------*/
@@ -177,7 +203,22 @@ enum semantic_errors {
 	SEMANTIC_E_NOT_DECLARATION_V_INDEX_ARRAY,		//The variable wasn't declared in index array
 	SEMANTIC_E_REAL_V_INDEX_ARRAY,				//The real variable, const or parameter in the index of array's element
 	SEMANTIC_E_CHARACTER_V_INDEX_ARRAY,			//The variable, const or parameter has type of character in the index of array's element
-	SEMANTIC_E_STRING_V_INDEX_ARRAY				//The variable, const or parameter has type of string in the index of array's element
+	SEMANTIC_E_STRING_V_INDEX_ARRAY,			//The variable, const or parameter has type of string in the index of array's element
+	SEMANTIC_E_NOT_DECLARATION,				//The variable, const or parameter wasn't declared before
+	SEMANTIC_E_INVALID_R_SIDE_ASSIGN,			//Invalid the right side of assign expression
+	SEMANTIC_E_NOT_DECLARATION_VARIABLE_FOR,		//The variable wasn't declared in condition of for loop
+	SEMANTIC_E_NOT_DECLARATION_VARIABLE_R_SIGN_FOR,		//The variable wasn't declared in the right side initialized value
+	SEMANTIC_E_NOT_DECLARATION_VARIABLE_IF,			//The variable in the condition of if statement wasn't declared
+	SEMANTIC_E_NOT_DECLARATION_VARIABLE_WHILE,		//The variable in the condition of while statement wasn't declared
+	SEMANTIC_E_NOT_DECLARATION_PROCEDURE_CALL,		//The procedure's name wasn't declared in the call procedure
+	SEMANTIC_E_LOST_PARAMETER_LIST_PROCEDURE_CALL,		//Lost parameters in the call procedure
+	SEMANTIC_E_EXCESS_PARAMETER_LIST_PROCEDURE_CALL,	//Excess parameter in the call procedure
+	SEMANTIC_E_NOT_DECLARATION_PARAMETER_CALL,		//The parameter wasn't declaration in the call procedure
+	SEMANTIC_E_INVALID_REFERENCE_PARAMETER_CALL,		//Invalid reference parameter in the call procedure
+	SEMANTIC_E_NOT_MATCH_TYPE_REFERENCE_PARAMETER_CALL,	//The type of parameter didn't match with type of reference parameter in procedure defination
+	SEMANTIC_NOT_MACTCH_TYPE_VALUE_PARAMETER_CALL,		//The type of parameter didn't match with type of value parameter in procedure defination
+	SEMANTIC_E_INVALID_VALUE_PARAMETER_CALL,		//Invalid value parameter in the call procedure
+	SEMANTIC_E_INVALID_NUM_PARAMETER_CALL			//Invalid number of parameters in the call procedure
 };
 
 void vPrintSemanticErrors(smt_error *smtErrorTable);

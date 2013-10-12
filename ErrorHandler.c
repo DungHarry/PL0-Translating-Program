@@ -255,7 +255,7 @@ void vPrintSemanticErrors(smt_error *smtErrorTable) {
 
 	printf("\tHave some semantic errors occurred: \n\n");
 
-	for(i = 0; i < MAX_SMT_ERRORS; i ++) {
+	for(i = 0; (i < MAX_SMT_ERRORS) && ((smtErrorTable + i)->_error != -1); i ++) {
 		printf("**%d. Semantic error %d::%d at ", i + 1, (smtErrorTable + i)->_line, (smtErrorTable + i)->_column);
 
 		switch((smtErrorTable + i)->_type) {
@@ -330,6 +330,51 @@ void vPrintSemanticErrors(smt_error *smtErrorTable) {
 				break;
 
 			case SEMANTIC_E_STRING_V_INDEX_ARRAY: printf("The variable, paramter or const has type of string in the index of array's element\n");
+				break;
+
+			case SEMANTIC_E_NOT_DECLARATION: printf("The variable, constant or parameter wasn't declared before\n");
+				break;
+
+			case SEMANTIC_E_INVALID_R_SIDE_ASSIGN: printf("Invalid right side of assign expression, constain math oper with char or string value\n");
+				break;
+
+			case SEMANTIC_E_NOT_DECLARATION_VARIABLE_FOR: printf("The index of for loop wasn't declared\n");
+				break;
+
+			case SEMANTIC_E_NOT_DECLARATION_VARIABLE_IF: printf("The identifier in the condition of if statement wasn't declared\n");
+				break;
+
+			case SEMANTIC_E_NOT_DECLARATION_VARIABLE_WHILE: printf("The variable in the condition of while statement wasn't declared\n");
+				break;
+
+			case SEMANTIC_E_NOT_DECLARATION_VARIABLE_R_SIGN_FOR: printf("The variable wasn't declared in the right side initialized value\n");
+				break;
+
+			case SEMANTIC_E_NOT_DECLARATION_PROCEDURE_CALL: printf("The procedure's name wasn't declared in the call procedure\n");
+				break;
+
+			case SEMANTIC_E_LOST_PARAMETER_LIST_PROCEDURE_CALL: printf("Lost parameters in the call procedure\n");
+				break;
+
+			case SEMANTIC_E_EXCESS_PARAMETER_LIST_PROCEDURE_CALL: printf("Excess parameter in the call procedure\n");
+				break;
+
+			case SEMANTIC_E_NOT_DECLARATION_PARAMETER_CALL: printf("The parameter wasn't declaration in the call procedure\n");
+				break;
+
+			case SEMANTIC_E_INVALID_REFERENCE_PARAMETER_CALL: printf("Invalid reference parameter passed in call procedure\n");
+				break;
+
+			case SEMANTIC_E_NOT_MATCH_TYPE_REFERENCE_PARAMETER_CALL: printf("The type of parameter didn't match with type of reference parameter in procedure defination\n");
+				break;
+
+			case SEMANTIC_NOT_MACTCH_TYPE_VALUE_PARAMETER_CALL: printf("The type of parameter didn't match with type of value parameter in procedure defination\n");
+				break;
+
+			case SEMANTIC_E_INVALID_VALUE_PARAMETER_CALL: printf("Invalid value parameter passed in call procedure\n");
+				break;
+
+			case SEMANTIC_E_INVALID_NUM_PARAMETER_CALL: printf("Invalid number of parameters in the call procedure with in the procedure defination\n");
 				break;
 
 			default: printf("Unknown error\n");
@@ -429,10 +474,25 @@ int print_error() {
 		case SEMANTIC_NULL_NODE_INCREASE_SMT_PROCEDURE: printf("The null node was passed to the iIncreaseStatusSmtProcedure function for semantic analysing\n");
 			break;
 
-		case SEMANTIC_NULL_NODE_DECREASE_SMT_PROCEDURE: printf("The null node was passed to the iDecreaseStatusSmtProcedure function for semantic analysing");
+		case SEMANTIC_NULL_NODE_DECREASE_SMT_PROCEDURE: printf("The null node was passed to the iDecreaseStatusSmtProcedure function for semantic analysing\n");
 			break;
 
 		case SEMANTIC_INVALID_AFTER_PROCEDURE_DECLARATION: printf("Invalid keyword after the procedure declaration for semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_SMT_PROCEDURE_UPDATE_TYPE: printf("The null smt_procedure node in the iUpdateValueType function for semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_PRINT_SMT_TABLE: printf("The null smt_data node was passed to the iPrintSmtTable function for semantic analysing\n");
+			break;
+
+		case SEMANTIC_NULL_NODE_FILE_PRINT_SMT_TABLE: printf("The null smt_data node was passed to the iFilePrintSmtTable function for semantic analysing\n");
+			break;
+
+		case SEMANTIC_INVALID_FILE_NAME_FILE_PRINT_SMT_TABLE: printf("Invalid fileName parameter was passed to the iFilePrintSmtTable function for semantic analysing\n");
+			break;
+
+		case SEMANTIC_COULDNT_CREATE_NEW_FILE_PRINT_SMT_TABLE: printf("Couldn't create new file in the iFilePrintSmtTable function for semantic analysing\n");
 			break;
 
 		default: printf("Unknown error\n");

@@ -10,6 +10,8 @@
 
 #include "LexicalAns.h"
 
+token_str tokenTable[MAX_TOKEN];
+
 char* lexical_keyword_parsing[MAX_LEXICAL_KEYWORD] = {
 							[kBegin] = "begin", [kEnd] = "end", [kIf] = "if", [kThen] = "then", [kWhile] = "while", 
 							[kDo] = "do", [kCall] = "call", [kConst] = "const", [kVar] = "var", 

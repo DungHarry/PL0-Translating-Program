@@ -51,7 +51,6 @@
 typedef enum lexical_keyword lexical_keyword;
 typedef struct token_str token_str;
 typedef enum lexical_status lexical_status;
-
 //Extern some external variable here
 
 #include "ErrorHandler.h"
@@ -83,8 +82,6 @@ struct token_str {
 	int _error;
 	char* _value;
 };
-
-token_str tokenTable[MAX_TOKEN];
 
 void vInitializeTokenTable(token_str *table, int iMaxElements);
 int iConstructLexicalTable(char *fileName, token_str *table, int iMaxElements);

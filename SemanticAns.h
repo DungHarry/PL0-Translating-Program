@@ -28,7 +28,7 @@ extern int semantic_error;
 #define MAX_SMT_ELEMENTS 3000
 #define MAX_SMT_ERRORS 2000
 
-#define void* LPVOID
+#define LPVOID void*
 #define TYPE_SMT_PROCEDURE 0
 #define TYPE_PROCEDURE_PARAS 1
 
@@ -38,13 +38,14 @@ extern int semantic_error;
 #define VALUE_TYPE_SEARCH_NOT_FOUND -1
 #define UPDATE_VALUE_TYPE_FAILURE -1
 
-#define VALUE_DICCUSSED_STATUS 0
-#define VALUE_INTIALIZE_STATUS 1
+#define VALUE_DICCUSSED_STATUS -1
+#define VALUE_INTIALIZE_STATUS 0
+#define VALUE_INTIALIZE_STATUS_DCL 1
 #define OUT_STATUS_SMT_PROCEDURE -1
 //Define some data type here
 
 typedef struct smt_error smt_error;
-typedef struct table_smt_data table_smt_data;
+typedef struct smt_data smt_data;
 typedef struct token_expand token_expand;
 typedef enum status_semantic status_semantic;
 typedef enum value_smt_type value_smt_type;
@@ -53,9 +54,6 @@ typedef struct smt_procedure smt_procedure;
 typedef enum status_common status_common;
 typedef unsigned int u_int;
 
-smt_data smtTable[MAX_SMT_ELEMENTS];
-smt_error smtError[MAX_SMT_ERRORS];
-token_expand tokenExpand[MAX_SEMANTIC_ELEMENTS];
 smt_procedure *head_procedure, *tail_procedure;
 
 int topStack;
@@ -69,13 +67,15 @@ int semanticStatus;
 #define READ_VAR(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >= 0) && (stBegin == 0) && (stCommon == cmmVar))
 #define READ_CONST(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >=0) && (stBegin == 0) && (stCommon == cmmConst))
 #define READ_NAME_PROCEDURE(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >= 1) && (stBegin == 0) && (stCommon == cmmNameProcedure))
-#define READ_STATEMENT(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >= 1) && (stBegin >= 1) && (stCommon == stStatement))
+#define READ_STATEMENT(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >= 0) && (stBegin >= 1) && (stCommon == stStatement))
 #define READ_STATEMENT_IF(value) (value == cmmIf)
 #define READ_ASSIGN(value) (value == cmmAssign)
 #define READ_STATEMENT_WHILE(value) (value == cmmWhile)
 #define READ_STATEMENT_CALL(value) (value == cmmCall)
 #define READ_STATEMENT_FOR(value) (value == cmmFor)
-#define END_PROCEDURE(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && () )
+#define END_PROCEDURE(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >= 1) && (stBegin == 1) && (stCommon == cmmEnd))
+#define END_SUB_PLAIN(stProgram, stProcedure, stBegin, stCommon) ((stProgram == 1) && (stProcedure >= 1) && (stBegin > 1) && (stCommon == cmmEnd))
+#define SWITCH_AFTER_END(value) (value == cmmEnd)
 
 #define NEXT_IDEN_PROGRAM(index) ((index == kVar) || (index == kConst) || (index == kProcedure) || (index == kBegin))
 #define AFTER_VAR(index) ((index == kVar) || (index == kConst) || (index == kProcedure) || (index == kBegin))
@@ -83,8 +83,19 @@ int semanticStatus;
 #define NEXT_VALUE_CONST(index) ((index == vInteger) || (index == vReal) || (index == vChar) || (index == vString))
 #define AFTER_NAME_PROCEDURE(index) ((index == kVar) || (index == kConst) || (index == kProcedure) || (index == kBegin))
 #define END_STATEMENT(index) ((index == kSemicolon) || (index == kEnd))
+#define INVALID_R_EXPRESSION(numCS, numValue) ((numCS > 1) || ((numCS == 1) && (numValue > 0)))
+#define AFTER_END_KEYWORD_PROCEDURE(index) ((index == kDot) || (index == kBegin) || (index == kProcedure) || (index == kVar) || (index == kConst))
+#define AFTER_END_KEYWORD_SUB_PLAIN(index) ((index == kIdentifier) || (index == kIf) || (index == kCall) || (index == kFor) || (index == kWhile) || (index == kEnd))
+#define NEXT_STATEMENT(index) ((index == kIdentifier) || (index == kIf) || (index == kCall) || (index == kFor) || (index == kWhile))
+#define NEXT_IDEN_CALL(index) ((index == kSemicolon) || (index == kEnd) || (index == kLParentheses))
+#define TYPE_REFERENCE_CALL(type_value) ((type_value == smtVariable) || (type_value == smtArray) || (type_value == smtParameterReference))
+#define TYPE_VALUE_CALL(type_value) ((type_value == smtParameterValue) || (type_value == smtConst))
+#define IDENTIFIER_TOKEN_CALL(index) (index == kIdentifier)
+#define VALUE_TOKEN_CALL(index) ((index == vInteger) || (index == vReal) || (index == vChar) || (index == vString))
+#define VERIFY_TYPE_CALL(typeParameter, typeSemantic) (typeParameter == typeSemantic)
+#define NEXT_CALL_PROCEDURE(index) ((index == kSemicolon) || (index == kEnd))
 //Report for some structs hold information about variable, parameter and procedure here
-
+/*
 struct smt_error {				//This is struct hold the information of an error occurred in semantic analysing
 	int _line;				//Line error occurred
 	int _column;				//Column error occurred
@@ -92,7 +103,7 @@ struct smt_error {				//This is struct hold the information of an error occurred
 	char *_name;				//Name of data error occurred
 	int _error;				//Error identifier
 };
-
+*/
 struct smt_data {				//Struct holds the information of all variables, parameters, constants are declared in source code
 	int _line;				//The line the data was declared
 	int _column;				//The column the data was declared
@@ -112,7 +123,7 @@ enum status_semantic {				//Status for common status
 	cmmWhile,				//Common while
 	cmmCall,				//Common call
 	cmmFor,					//Common for
-	cmmEnd,
+	cmmEnd,					//Common end
 	cmmProgram,				//Common program
 	cmmProcedure,				//Common procedure
 	cmmNameProcedure,			//Common name procedure
@@ -123,7 +134,7 @@ enum sub_status {				//Sub status when analysis var, const, statement
 	varArray,				//Var array
 	varNormal				//Var normal
 };
-
+/*
 enum type_smt_data {				//Enum for type of semantic data
 	smtVariable,				//Variabe type
 	smtArray,				//Array type
@@ -132,7 +143,7 @@ enum type_smt_data {				//Enum for type of semantic data
 	smtConst,				//Constant type
 	smtProcedure				//Procedure type
 };
-
+*/
 enum value_smt_type {				//Enum for all types of semantic value
 	smtInteger,				//Integer type
 	smtReal,				//Real type
@@ -149,7 +160,7 @@ struct procedure_paras {			//The struct holds the information of parameters, con
 	int _order;				//Order of parameter from left to right side
 	char *_name;				//Parameter name
 	int _type;				//Type of parameter, can be: passed by value or passed by reference
-	int _type_value;
+	int _type_value;			//Type of value can be integer, real, char or string
 	procedure_paras *_ptr;			//The procedure_paras pointer
 };
 
@@ -160,20 +171,27 @@ struct smt_procedure {				//The struct holds information of all procedure in PL0
 	procedure_paras *_tail_paras;		//The pointer to the tail of parameters list
 	smt_procedure *_ptr;			//The smt_procedure pointer 
 };
+
+smt_data smtTable[MAX_SMT_ELEMENTS];
+smt_error smtError[MAX_SMT_ERRORS];
+token_expand tokenExpand[MAX_SMT_ELEMENTS];
+
 /*------------------------------------------Declare all function in the semantic analysing---------------------------------------------------------*/
 
 void vInitialize(smt_data *smtTable, smt_error *smtError, token_expand *tokenExpand);
 int iAnalysisSemantic(token_str *tokenTable, smt_data *smtTable, smt_error *smtError, token_expand *tokenExpand);
-int vPushSmtTable(smt_data *smtTable, token_expand *tokenExpandTable, smt_data smtElement);
+int vPushSmtTable(smt_data *smtTable, smt_data smtElement);
 int vPopSmtTable(smt_data *smtTable);
 int iSearchSmtTable(smt_data *smtTable, smt_data **result, char *idenName);
-int iSearchValueType(token_expand *tokenExpandTable, char *idenValue);
-int iUpdateValueType(token_expand *tokenExpandTable, char *idenValue, int iNewValue);
+int iSearchValueType(smt_data *smtTable, char *idenValue);
+int iUpdateValueType(token_str *tokenTable, smt_data *smtTable, char *idenValue, int iNewValue);
 int iInserSmtError(smt_error *smtErrorTable, smt_error *errorElement);
 int iIncreaseStatusAUnit(smt_data *smtTable);
 int iDecreaseStatusAUnit(smt_data *smtTable);
 int iSetSemanticStatus(int newStProgram, int newStProcedure, int newStBegin, int newStCommon);
 int iAddSemanticError(int line, int column, int type, char *name, int error, int index);
+int iPrintSmtTable(smt_data *smtTable);
+int iFilePrintSmtTable(char *fileName, smt_data *smtTable);
 //Declare some functions for procedure parameters
 
 int iCreateNewNode(LPVOID* node, int typeNode);
