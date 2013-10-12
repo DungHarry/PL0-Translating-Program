@@ -1,0 +1,46 @@
+/*
+	Author: Dung Harry
+	Date created: 5th, October 2013
+	Operating System: Ubuntu 13.04 Desktop x86_64
+	Compiler: GNU compiler 4.7.3
+
+	Description: this is the third PL0 source code for syntax analysing
+*/
+
+program quicksort;
+var a[100], i, n;
+
+procedure xep(b; var c);
+var k,g,l,h;
+begin
+	if c-b>0 then
+	begin
+		k:=(b + c) / 2;
+		g:=b / c;
+		h:=c;
+		while a[g]<a[k] do g := g+1;
+		while a[h]>a[k] do h := h+1;
+		if g<=h then
+		begin
+			if g<h then 
+			begin 
+				l:=a[g]; a[g]:=a[h]; a[h]:=l
+			end;
+			g := g+1;
+			h := h+1
+		end;
+	c := b;
+	call xep(b,h);
+	call xep(g,c)
+	end
+end;
+
+begin
+	call write(a);
+	for i:=1 to n do
+	begin
+		call readln(a[i])
+	end;
+	call xep(1,n);
+	for i:=1 to n do call write(a[i])
+end.
